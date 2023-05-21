@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Controller</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+        <script>
+            let camera_ip = "http://192.168.1.247";
+            let robot_ip = "http://192.168.1.4";
+        </script>
+        <!-- <style>
+            .btn-dpad {
+                width: 72px!important;
+                height: 72px!important;
+                border-radius: 8px!important;
+            }
+        </style> -->
+    </head>
+    <body>
+        <div class="container">
+            <div class="row mt-3">
+                <div class="col"></div>
+                <div class="col">
+                    <center>
+                        <div class="card p-0 m-0" style="width: 640px;">
+                            <img id="snapshot" width="640px" height="480px" class="card-img"/>
+                            <div class="card-img-overlay p-0 m-0">
+                                <canvas id="fdc" width="638px" height="478px"></canvas>
+                            </div>
+                        </div>
+                    </center>
+                </div>
+                <div class="col"></div>
+            </div>
+            <div class="row" style="margin-top: 40px;">
+                <div class="col-sm"></div>
+                <div class="col-sm-4">
+                    <center>
+                        <b>Motor</b>
+                        <br>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+                            <button class="btn-dpad btn btn-light">↖</button>
+                            <button class="btn-dpad btn btn-primary" ontouchstart="m(0)" onmousedown="m(0)" onmouseup="m(999)">↑</button>
+                            <button class="btn-dpad btn btn-light">↗</button>
+                        </div>
+                        <br>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+                            <button class="btn-dpad btn btn-primary" ontouchstart="m(2)" onmousedown="m(2)" onmouseup="m(999)">←</button>
+                            <button class="btn-dpad btn btn-light">↔</button>
+                            <button class="btn-dpad btn btn-primary" ontouchstart="m(3)" onmousedown="m(3)" onmouseup="m(999)">→</button>
+                        </div>
+                        <br>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+                            <button class="btn-dpad btn btn-light">↙</button>
+                            <button class="btn-dpad btn btn-primary" ontouchstart="m(1)" onmousedown="m(1)" onmouseup="m(999)">↓</button>
+                            <button class="btn-dpad btn btn-light">↘</button>
+                        </div>
+                    </center>
+                </div>
+                <div class="col-sm-4">
+                    <center>
+                        <b>Camera</b>
+                        <br>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+                            <button class="btn-dpad btn btn-light" ontouchstart="c(5)" onmousedown="c(5)" onmouseup="c(999)">↖</button>
+                            <button class="btn-dpad btn btn-warning" ontouchstart="c(0)" onmousedown="c(0)" onmouseup="c(999)">↑</button>
+                            <button class="btn-dpad btn btn-light" ontouchstart="c(6)" onmousedown="c(6)" onmouseup="c(999)">↗</button>
+                        </div>
+                        <br>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+                            <button class="btn-dpad btn btn-warning" ontouchstart="c(2)" onmousedown="c(2)" onmouseup="c(999)">←</button>
+                            <button class="btn-dpad btn btn-warning" ontouchstart="c(4)" onmousedown="c(4)" onmouseup="c(999)">↔</button>
+                            <button class="btn-dpad btn btn-warning" ontouchstart="c(3)" onmousedown="c(3)" onmouseup="c(999)">→</button>
+                        </div>
+                        <br>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+                            <button class="btn-dpad btn btn-light" ontouchstart="c(7)" onmousedown="c(7)" onmouseup="c(999)">↙</button>
+                            <button class="btn-dpad btn btn-warning" ontouchstart="c(1)" onmousedown="c(1)" onmouseup="c(999)">↓</button>
+                            <button class="btn-dpad btn btn-light" ontouchstart="c(8)" onmousedown="c(8)" onmouseup="c(999)">↘</button>
+                        </div>
+                    </center>
+                </div>
+                <div class="col-sm"></div>
+            </div>
+            <div class="row my-5">
+                <div class="col"></div>
+                <div class="col-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" onchange="l(this)">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Light</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" onchange="fd(this)">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Face Detect</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="rendering-option" checked>
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Render Overlay</label>
+                    </div>
+                    <div class="btn-toolbar mt-2" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="oc()">OTA Camera</button>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="Second group">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="or()">OTA Robot</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col"></div>
+            </div>
+        </div>
+        <script>
+            var intervalId = null;
+            var canvas = document.getElementById("fdc");
+            var ctx = canvas.getContext("2d");
+
+            let stream_width = 320;
+            let stream_height = 240;
+            let stream_score_threshold = 0.05;
+
+            function m(d) {
+                $.get(robot_ip + "/robot?d="+d);
+            }
+
+            function c(d) {
+                $.get(robot_ip + "/cam?d="+d);
+            }
+
+            function l(s) {
+                if ($(s).is(':checked')) {
+                    $.get(camera_ip + "/ledon");
+                } else {
+                    $.get(camera_ip + "/ledoff");
+                }
+            }
+
+            function fd(s) {
+                if ($(s).is(':checked')) {
+                    $.get(camera_ip + "/fdon");
+                } else {
+                    $.get(camera_ip + "/fdoff");
+                }
+            }
+
+            function oc() {
+                $.get(camera_ip + "/start_ota");
+            }
+
+            function or() {
+                $.get(robot_ip + "/start_ota");
+            }
+
+            function renderBar(x, y, name, value, max) {
+                ctx.fillText("" + name + ":", x, y)
+                ctx.fillRect(x + 52, y - 9, 40*(1-(value/max)), 10);
+                ctx.strokeRect(x + 52, y - 9, 40, 10);
+                ctx.fillText("" + parseInt((max-value)/1024) + " / " + parseInt(max/1024) + " KB", x + 100, y)
+            }
+            
+            function render(data) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                ctx.fillStyle = "#FFaa00"
+                ctx.strokeStyle = "#FFaa00"
+                ctx.lineWidth = 2
+
+                ctx.font = "12px Arial"
+                ctx.fillText("Camera FPS: " + parseInt(1000/(data.read+0.001)), 10, 20)
+                ctx.fillText("Stream FPS: " + parseInt(1000/data.stream), 10, 36)
+                ctx.fillText("Predict FPS: " + parseInt(1000/(data.decode + data.predict + data.draw)), 10, 52)
+
+                ctx.fillText("Temp: " + parseInt(data.temp), 10, 68)
+                ctx.fillText("Battery: " + parseInt(data.robot.batteryVoltage*100)/100 + "V", 10, 84)
+
+                // ctx.fillText("Heap:", 460, 20)
+                // ctx.fillRect(500, 11, 40*(1-data.chip_free_heap_percent), 10);
+                // ctx.strokeRect(500, 11, 40, 10);
+                // ctx.fillText("" + parseInt((data.chip_total_heap-data.chip_free_heap)/1024) + " / " + parseInt(data.chip_total_heap/1024) + " KB", 550, 20)
+
+                renderBar(460, 20, "Heap", data.heap.free, data.heap.total)
+                renderBar(460, 36, "Psram", data.psram.free, data.psram.total)
+                renderBar(460, 52, "Rbheap", data.robot.heap.free, data.robot.heap.total)
+
+
+                ctx.fillStyle = "#ffaa00"
+                ctx.strokeStyle = "#0055FF"
+                ctx.lineWidth = 3
+                data.faces.forEach(face => {
+                    if (face.score >= stream_score_threshold) {
+                        let x = face.box[0]*ctx.canvas.width/stream_width;
+                        let y = face.box[1]*ctx.canvas.height/stream_height;
+                        let xx = face.box[2]*ctx.canvas.width/stream_width;
+                        let yy = face.box[3]*ctx.canvas.height/stream_height;
+                        let w = xx-x;
+                        let h = yy-y;
+                        ctx.strokeRect(x, y, w, h);
+                        ctx.fillText("" + parseInt(face.score*10000)/100 + " %", x+4, y+16)
+                    }
+                });
+                
+            }
+
+            function pingStreamStatus() {
+                if ($("#rendering-option").is(':checked')) {
+                    $.get(camera_ip + "/report", function(data) {
+                        render(data)
+                        // console.log(data)
+                    });
+                } else {
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                }
+            }
+
+            (function($) {
+                $(document).ready(function() {
+                    $("#snapshot").attr("src", camera_ip + ":81/stream")
+                    pingStreamStatus()
+                    intervalId = setInterval(() => {
+                        pingStreamStatus()
+                    }, 200);
+                });
+            })(jQuery);
+        </script>
+    </body>
+</html>
